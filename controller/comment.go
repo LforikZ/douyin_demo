@@ -1,18 +1,19 @@
 package controller
 
 import (
+	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type CommentListResponse struct {
 	Response
-	CommentList []Comment `json:"comment_list,omitempty"`
+	CommentList []entity.Comment `json:"comment_list,omitempty"`
 }
 
 type CommentActionResponse struct {
 	Response
-	Comment Comment `json:"comment,omitempty"`
+	Comment entity.Comment `json:"comment,omitempty"`
 }
 
 // CommentAction no practical effect, just check if token is valid
@@ -24,7 +25,7 @@ func CommentAction(c *gin.Context) {
 		if actionType == "1" {
 			text := c.Query("comment_text")
 			c.JSON(http.StatusOK, CommentActionResponse{Response: Response{StatusCode: 0},
-				Comment: Comment{
+				Comment: entity.Comment{
 					Id:         1,
 					User:       user,
 					Content:    text,

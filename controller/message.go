@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -9,13 +10,13 @@ import (
 	"time"
 )
 
-var tempChat = map[string][]Message{}
+var tempChat = map[string][]entity.Message{}
 
 var messageIdSequence = int64(1)
 
 type ChatResponse struct {
 	Response
-	MessageList []Message `json:"message_list"`
+	MessageList []entity.Message `json:"message_list"`
 }
 
 // MessageAction no practical effect, just check if token is valid
@@ -29,7 +30,7 @@ func MessageAction(c *gin.Context) {
 		chatKey := genChatKey(user.Id, int64(userIdB))
 
 		atomic.AddInt64(&messageIdSequence, 1)
-		curMessage := Message{
+		curMessage := entity.Message{
 			Id:         messageIdSequence,
 			Content:    content,
 			CreateTime: time.Now().Format(time.Kitchen),
@@ -38,7 +39,7 @@ func MessageAction(c *gin.Context) {
 		if messages, exist := tempChat[chatKey]; exist {
 			tempChat[chatKey] = append(messages, curMessage)
 		} else {
-			tempChat[chatKey] = []Message{curMessage}
+			tempChat[chatKey] = []entity.Message{curMessage}
 		}
 		c.JSON(http.StatusOK, Response{StatusCode: 0})
 	} else {
