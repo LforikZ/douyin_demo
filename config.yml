@@ -1,0 +1,18 @@
+name: "douyin-demo"
+mode: "dev"
+port: 8080
+version: 'v0.0.1'
+start_time: "2023-02-03"
+machine_id: 1
+
+
+mysql:
+  host: "1.12.245.119"
+  port: 3306
+  user: "douyin"
+  password: "douyin123"
+  dbname: "douyin"
+  max_open_conns: 100
+  max_idle_conns: 20
+
+
