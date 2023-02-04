@@ -1,10 +1,9 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type CommentListResponse struct {
