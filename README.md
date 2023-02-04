@@ -19,7 +19,7 @@ go build && ./simple-demo
 
 ### 测试
 
-test 目录下为不同场景的功能测试case，可用于验证功能实现正确性
+GetUserAllVideos 目录下为不同场景的功能测试case，可用于验证功能实现正确性
 
 其中 common.go 中的 _serverAddr_ 为服务部署的地址，默认为本机地址，可以根据实际情况修改
 
