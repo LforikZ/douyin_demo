@@ -25,5 +25,6 @@ func Authentication(token string) (bool, string) {
 			return res, msg
 		}
 	}
+	res = true
 	return res, msg
 }
