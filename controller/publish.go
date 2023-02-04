@@ -5,11 +5,13 @@ import (
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type VideoListResponse struct {
 	Response
-	VideoList []entity.Video `json:"video_list"`
+	VideoList []entity.ApiVideo `json:"video_list"`
 }
 
 // Publish check token then save upload file to public directory
@@ -31,8 +33,7 @@ func Publish(c *gin.Context) {
 		return
 	}
 	// 业务处理
-	saveFile, finalName := service.Publish(data, entity.User(user))
-
+	saveFile, finalName := service.Publish(data, user)
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: CodeFailed,
@@ -40,11 +41,26 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
+	info, err := GetVideoInfo(finalName)
+	if err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: CodeFailed,
+			StatusMsg:  err.Error(),
+		})
+	}
+
+	if err := service.InsertVideo(info, user); err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: CodeFailed,
+			StatusMsg:  err.Error(),
+		})
+	}
 
 	c.JSON(http.StatusOK, Response{
 		StatusCode: CodeSuccess,
 		StatusMsg:  finalName + UploadSuccess,
 	})
+	return
 }
 
 // PublishList all users have same publish video list
@@ -53,6 +69,11 @@ func PublishList(c *gin.Context) {
 		Response: Response{
 			StatusCode: CodeSuccess,
 		},
-		VideoList: DemoVideos,
+		VideoList: nil,
 	})
+}
+
+// GetVideoInfo 解析视频内容
+func GetVideoInfo(videoPath string) (os.FileInfo, error) {
+	return os.Stat(filepath.Join("./public/", videoPath))
 }
