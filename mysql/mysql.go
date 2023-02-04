@@ -3,6 +3,7 @@ package mysql
 
 import (
 	"fmt"
+
 	"github.com/RaymondCode/simple-demo/settings"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -22,7 +23,7 @@ func Init(cfg *settings.MySQLConfig) error {
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return nil
+		return nil // panic(fmt.Errorf("gorm open error: %s\n", err))
 	}
 	//TODO:将表配置到数据库中去
 	if err := db.AutoMigrate(

@@ -6,8 +6,9 @@ var (
 )
 
 const (
-	UploadSuccess = " uploaded successfully"
-	UserNotExit   = "User doesn't exist"
+	UploadSuccess     = " uploaded successfully"
+	UserNotExit       = "User doesn't exist"
+	ParamRequestError = "Param request error"
 )
 
 type Response struct {

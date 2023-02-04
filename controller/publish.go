@@ -1,15 +1,17 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/RaymondCode/simple-demo/entity"
+	"github.com/RaymondCode/simple-demo/mysql"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type VideoListResponse struct {
 	Response
-	VideoList []entity.Video `json:"video_list"`
+	VideoList []mysql.Video `json:"video_list"`
 }
 
 // Publish check token then save upload file to public directory
