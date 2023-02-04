@@ -2,6 +2,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,7 @@ type User struct {
 }
 type Video struct {
 	gorm.Model
+	AuthorID      string `gorm:"notnull"`       //作者id
 	AuthorName    string `gorm:"notnull"`       //作者姓名
 	PlayUrl       string `gorm:"notnull"`       //视频地址
 	CoverUrl      string `gorm:"notnull"`       //封面网址
@@ -30,7 +32,21 @@ func Insert(video *entity.Video) (err error) {
 	return
 }
 
-func GetUserAllVideos() (videos []Video) {
-	db.Find(&videos)
-	return videos
+func GetUserAllVideos(userID string) (a []entity.ApiVideo, err error) {
+	var videos []Video
+	if result := db.Where("author_name=?", userID).Find(&videos); result.Error == sql.ErrNoRows {
+		err = result.Error
+	}
+	for _, video := range videos {
+		midData := entity.ApiVideo{
+			User:          nil,
+			PlayUrl:       video.PlayUrl,
+			CoverUrl:      video.CoverUrl,
+			FavoriteCount: video.FavoriteCount,
+			CommentCount:  video.CommentCount,
+			IsFavorite:    video.IsFavorite,
+		}
+		a = append(a, midData)
+	}
+	return a, err
 }

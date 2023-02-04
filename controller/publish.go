@@ -65,12 +65,32 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
+	token := c.Param("token")
+	if _, exist := usersLoginInfo[token]; !exist {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: CodeFailed,
+			StatusMsg:  UserNotExit,
+		})
+		return
+	}
+
+	userid := c.Param("user_id")
+	videoList, err := service.GetVideoList(userid)
+	if err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: CodeFailed,
+			StatusMsg:  VideosNotExit,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: Response{
 			StatusCode: CodeSuccess,
 		},
-		VideoList: nil,
+		VideoList: videoList,
 	})
+	return
 }
 
 // GetVideoInfo 解析视频内容

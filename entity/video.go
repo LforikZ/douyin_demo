@@ -2,6 +2,7 @@
 package entity
 
 type Video struct {
+	AuthorID      string //作者id
 	AuthorName    string //作者姓名
 	PlayUrl       string //视频地址
 	CoverUrl      string //封面网址
