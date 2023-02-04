@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/RaymondCode/simple-demo/entity"
+	"github.com/RaymondCode/simple-demo/pkg/e"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
@@ -44,9 +45,9 @@ func Register(c *gin.Context) {
 		res := userRegisterService.Register()
 		c.JSON(200, res)
 	} else {
-		//c.JSON(400, ErrorResponse(err))
 		c.JSON(400, entity.UserLoginResponse{
-			Response: entity.Response{StatusCode: 1, StatusMsg: "y"}})
+			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorParams},
+		})
 	}
 	//username := c.Query("username")
 	//password := c.Query("password")
@@ -73,6 +74,16 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
+
+	var userLoginService service.UserService
+	if err := c.ShouldBind(&userLoginService); err == nil {
+		res := userLoginService.Login()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, entity.UserLoginResponse{
+			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorParams},
+		})
+	}
 	//username := c.Query("username")
 	//password := c.Query("password")
 	//

@@ -9,10 +9,16 @@ const (
 	UploadSuccess = " uploaded successfully"
 	UserNotExit   = "User doesn't exist"
 	//user
-	RegisterSuccess            = "register successfully"
-	ErrorExistUser             = "User already exists"
-	ErrorFailEncryption        = "Password encryption failed"
-	ErrorNotCompare            = "Password error"
+	RegisterSuccess     = "register successfully"
+	ErrorExistUser      = "User already exists"
+	ErrorParams         = "Params Error"
+	ErrorFailEncryption = "Password encryption failed"
+
+	LoginSuccess      = "Login successfully"
+	ErrorUserNotFound = "User not found"
+
+	ErrorNotCompare = "Password error"
+
 	ErrorNotToken              = "Token not found"
 	ErrorAuthCheckTokenFail    = "Token authentication failed" //token 错误
 	ErrorAuthCheckTokenTimeout = "Token timed out"             //token 过期

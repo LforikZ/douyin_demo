@@ -6,6 +6,7 @@ import (
 	"github.com/RaymondCode/simple-demo/mysql"
 	"github.com/RaymondCode/simple-demo/pkg/e"
 	"github.com/RaymondCode/simple-demo/pkg/util"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -14,13 +15,12 @@ type UserService struct {
 }
 
 func (service *UserService) Register() *entity.UserRegisterResponse {
-	code := e.CodeSuccess
+	code := e.CodeFailed
 	var user mysql.User
 	var count int64
 	mysql.Db.Model(&mysql.User{}).Where("name=?", service.Name).First(&user).Count(&count)
 	// 表单验证
 	if count == 1 {
-		code = e.CodeFailed
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorExistUser},
 			Token:    "",
@@ -33,16 +33,14 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 
 	// 加密密码
 	if err := user.SetPassword(service.Password); err != nil {
-		code = e.CodeFailed
 		return &entity.UserRegisterResponse{
-			Response: entity.Response{StatusCode: e.CodeFailed, StatusMsg: e.ErrorFailEncryption},
+			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorFailEncryption},
 			Token:    "",
 		}
 	}
 	//生成token
 	token, err := util.GenerateToken(user.ID, service.Name, 0)
 	if err != nil {
-		code = e.CodeFailed
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorAuthToken},
 			Token:    "",
@@ -50,16 +48,69 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 	}
 	// 创建用户
 	if err := mysql.Db.Create(&user).Error; err != nil {
-		code = e.CodeFailed
 		return &entity.UserRegisterResponse{
-			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorDatabase},
+			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorDatabase},
 			Token:    "",
 		}
 	}
-
+	code = e.CodeSuccess
 	return &entity.UserRegisterResponse{
 		Response: entity.Response{StatusCode: code, StatusMsg: e.RegisterSuccess},
 		UserId:   int64(user.ID),
 		Token:    token,
+	}
+}
+func (service *UserService) Login() *entity.UserRegisterResponse {
+	var user mysql.User
+	code := e.CodeFailed
+	if err := mysql.Db.Where("name=?", service.Name).First(&user).Error; err != nil {
+		// 如果查询不到，返回相应的错误
+		if err.Error() == gorm.ErrRecordNotFound.Error() {
+			return &entity.UserRegisterResponse{
+				Response: entity.Response{
+					StatusCode: code,
+					StatusMsg:  e.ErrorUserNotFound,
+				},
+				Token: "",
+			}
+
+		}
+		return &entity.UserRegisterResponse{
+			Response: entity.Response{
+				StatusCode: code,
+				StatusMsg:  e.ErrorDatabase,
+			},
+			Token: "",
+		}
+
+	}
+	if !user.CheckPassword(service.Password) {
+		return &entity.UserRegisterResponse{
+			Response: entity.Response{
+				StatusCode: code,
+				StatusMsg:  e.ErrorNotCompare,
+			},
+			Token: "",
+		}
+
+	}
+	token, err := util.GenerateToken(user.ID, service.Name, 0)
+	if err != nil {
+		return &entity.UserRegisterResponse{
+			Response: entity.Response{
+				StatusCode: code,
+				StatusMsg:  e.ErrorAuthToken,
+			},
+			Token: "",
+		}
+	}
+	code = e.CodeSuccess
+	return &entity.UserRegisterResponse{
+		Response: entity.Response{
+			StatusCode: code,
+			StatusMsg:  e.LoginSuccess,
+		},
+		UserId: int64(user.ID),
+		Token:  token,
 	}
 }
