@@ -92,7 +92,6 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 			},
 			Token: "",
 		}
-
 	}
 	token, err := util.GenerateToken(user.ID, service.Name, 0)
 	if err != nil {

@@ -3,8 +3,11 @@ package controller
 import (
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/pkg/e"
+	"github.com/RaymondCode/simple-demo/pkg/util"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 )
 
 // usersLoginInfo use map to store user info, and key is username+password for demo
@@ -18,6 +21,11 @@ var usersLoginInfo = map[string]entity.User{
 		FollowerCount: 5,
 		IsFollow:      true,
 	},
+}
+
+type UserResponse struct {
+	entity.Response
+	User entity.User `json:"user"`
 }
 
 var userIdSequence = int64(1)
@@ -103,6 +111,33 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
+	token := c.Query("token")
+
+	if token == "" {
+		c.JSON(http.StatusOK, entity.Response{StatusCode: 41, StatusMsg: "错误: 没找到token!(" + e.ErrorNotToken + ")"})
+		return
+	} else {
+		claims, err := util.ParseToken(token)
+		if err != nil {
+			c.JSON(http.StatusOK, entity.Response{StatusCode: 41, StatusMsg: "解析token失败QAQ(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
+			return
+		} else if time.Now().Unix() > claims.ExpiresAt {
+			c.JSON(http.StatusOK, entity.Response{StatusCode: 41, StatusMsg: "WARN：token未在有效期QAQ(" + e.ErrorAuthCheckTokenTimeout + ")"})
+			return
+		}
+	} //token分析
+
+	// TODO 查数据库，正在写 2023-02-04 22：01：20
+	if user, exist := usersLoginInfo[token]; exist {
+		c.JSON(http.StatusOK, UserResponse{
+			Response: entity.Response{StatusCode: 0},
+			User:     user,
+		})
+	} else {
+		c.JSON(http.StatusOK, UserResponse{
+			Response: entity.Response{StatusCode: 51, StatusMsg: e.ErrorUserNotFound},
+		})
+	}
 	//token := c.Query("token")
 	//
 	//if user, exist := usersLoginInfo[token]; exist {
