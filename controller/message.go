@@ -2,12 +2,13 @@ package controller
 
 import (
 	"fmt"
-	"github.com/RaymondCode/simple-demo/entity"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"sync/atomic"
 	"time"
+
+	"github.com/RaymondCode/simple-demo/entity"
+	"github.com/gin-gonic/gin"
 )
 
 var tempChat = map[string][]entity.Message{}
