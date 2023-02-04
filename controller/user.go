@@ -111,33 +111,41 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
-	token := c.Query("token")
-
+	token := c.Query("token") //get请求，url截取token参数
+	var claim *util.Claims
 	if token == "" {
-		c.JSON(http.StatusOK, entity.Response{StatusCode: 41, StatusMsg: "错误: 没找到token!(" + e.ErrorNotToken + ")"})
+		c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "错误: 没找到token!(" + e.ErrorNotToken + ")"})
 		return
 	} else {
 		claims, err := util.ParseToken(token)
+		claim = claims
 		if err != nil {
-			c.JSON(http.StatusOK, entity.Response{StatusCode: 41, StatusMsg: "解析token失败QAQ(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
+			c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "解析token失败QAQ(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
 			return
 		} else if time.Now().Unix() > claims.ExpiresAt {
-			c.JSON(http.StatusOK, entity.Response{StatusCode: 41, StatusMsg: "WARN：token未在有效期QAQ(" + e.ErrorAuthCheckTokenTimeout + ")"})
+			c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "WARN：token未在有效期QAQ(" + e.ErrorAuthCheckTokenTimeout + ")"})
 			return
 		}
 	} //token分析
 
-	// TODO 查数据库，正在写 2023-02-04 22：01：20
-	if user, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: entity.Response{StatusCode: 0},
-			User:     user,
-		})
+	var infoService service.InfoService
+	res := infoService.Info(claim.Id, claim.Username)
+	if res.StatusCode == 1 {
+		c.JSON(http.StatusBadRequest, res.Response)
 	} else {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: entity.Response{StatusCode: 51, StatusMsg: e.ErrorUserNotFound},
-		})
+		c.JSON(http.StatusOK, res.User)
 	}
+
+	//if user, exist := usersLoginInfo[token]; exist {
+	//	c.JSON(http.StatusOK, UserResponse{
+	//		Response: entity.Response{StatusCode: 0},
+	//		User:     user,
+	//	})
+	//} else {
+	//	c.JSON(http.StatusOK, UserResponse{
+	//		Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorUserNotFound},
+	//	})
+	//}
 	//token := c.Query("token")
 	//
 	//if user, exist := usersLoginInfo[token]; exist {

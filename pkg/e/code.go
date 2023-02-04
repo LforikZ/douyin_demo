@@ -13,9 +13,9 @@ const (
 	ErrorExistUser      = "User already exists"
 	ErrorParams         = "Params Error"
 	ErrorFailEncryption = "Password encryption failed"
-
-	LoginSuccess      = "Login successfully"
-	ErrorUserNotFound = "User not found"
+	UserSelectSuccess   = "user select successfully"
+	LoginSuccess        = "Login successfully"
+	ErrorUserNotFound   = "User not found"
 
 	ErrorNotCompare = "Password error"
 

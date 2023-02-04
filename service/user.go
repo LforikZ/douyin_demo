@@ -14,6 +14,11 @@ type UserService struct {
 	Password string `form:"password" json:"password" binding:"required,max=32"`
 }
 
+type InfoService struct {
+	id   int64  `form:"id" json:"id" binding:"required"`
+	Name string `form:"username" json:"username" binding:"required,max=32"`
+}
+
 func (service *UserService) Register() *entity.UserRegisterResponse {
 	code := e.CodeFailed
 	var user mysql.User
@@ -111,5 +116,39 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 		},
 		UserId: int64(user.ID),
 		Token:  token,
+	}
+}
+
+func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
+	var user mysql.User
+	err := mysql.Db.Where("id=?", id).First(&user).Error
+	if err != nil {
+		user := entity.User{Name: name, Id: service.id}
+		if err.Error() == gorm.ErrRecordNotFound.Error() {
+			return &entity.UserResponse{
+				Response: entity.Response{
+					StatusCode: 1,
+					StatusMsg:  e.ErrorUserNotFound,
+				},
+				User: user,
+			}
+		}
+		return &entity.UserResponse{
+			Response: entity.Response{
+				StatusCode: 1,
+				StatusMsg:  e.ErrorDatabase,
+			},
+			User: user,
+		}
+	}
+	code := e.CodeSuccess
+	return &entity.UserResponse{
+		Response: entity.Response{
+			StatusCode: code,
+			StatusMsg:  e.UserSelectSuccess,
+		},
+		User: entity.User{Name: user.Name, Id: int64(user.ID),
+			FollowCount: user.FollowCount, FollowerCount: user.FollowerCount,
+			IsFollow: user.IsFollow},
 	}
 }
