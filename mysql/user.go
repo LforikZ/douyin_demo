@@ -44,7 +44,7 @@ func RegisterAuth(service *UserService, user *User) int64 {
 }
 
 func LoginAuth(service *UserService, user *User) error {
-	err := db.Where("name=?", service.Name).First(&user).Error
+	err := db.Where("name=?", service.Name).Find(&user).Error
 	return err
 }
 

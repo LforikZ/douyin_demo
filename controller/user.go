@@ -53,22 +53,7 @@ func Login(c *gin.Context) {
 			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorParams},
 		})
 	}
-	//username := c.Query("username")
-	//password := c.Query("password")
-	//
-	//token := username + password
-	//
-	//if user, exist := usersLoginInfo[token]; exist {
-	//	c.JSON(http.StatusOK, UserLoginResponse{
-	//		Response: Response{StatusCode: 0},
-	//		UserId:   user.Id,
-	//		Token:    token,
-	//	})
-	//} else {
-	//	c.JSON(http.StatusOK, UserLoginResponse{
-	//		Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-	//	})
-	//}
+
 }
 
 func UserInfo(c *gin.Context) {
@@ -97,26 +82,4 @@ func UserInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, res.User)
 	}
 
-	//if user, exist := usersLoginInfo[token]; exist {
-	//	c.JSON(http.StatusOK, UserResponse{
-	//		Response: entity.Response{StatusCode: 0},
-	//		User:     user,
-	//	})
-	//} else {
-	//	c.JSON(http.StatusOK, UserResponse{
-	//		Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorUserNotFound},
-	//	})
-	//}
-	//token := c.Query("token")
-	//
-	//if user, exist := usersLoginInfo[token]; exist {
-	//	c.JSON(http.StatusOK,{
-	//		Response: Response{StatusCode: 0},
-	//		User:     user,
-	//	})
-	//} else {
-	//	c.JSON(http.StatusOK, UserResponse{
-	//		Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-	//	})
-	//}
 }
