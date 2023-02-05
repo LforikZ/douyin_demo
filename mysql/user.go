@@ -2,6 +2,7 @@
 package mysql
 
 import (
+	"github.com/RaymondCode/simple-demo/entity"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -43,7 +44,7 @@ func RegisterAuth(service *UserService, user *User) int64 {
 }
 
 func LoginAuth(service *UserService, user *User) error {
-	err := db.Where("name=?", service.Name).First(&user).Error
+	err := db.Where("name=?", service.Name).Find(&user).Error
 	return err
 }
 
@@ -52,7 +53,23 @@ func InfoAuth(user *User, id int64) error {
 	return err
 }
 
-//SetPassword 设置密码
+func GetUserInfo(id int) (result *entity.User, err error) {
+	var user User
+	if a := db.Where("id=?", id).Find(&user); a.Error != nil {
+		err = a.Error
+		return result, err
+	}
+	result = &entity.User{
+		Id:            int64(user.ID),
+		Name:          user.Name,
+		FollowCount:   user.FollowerCount,
+		FollowerCount: user.FollowCount,
+		IsFollow:      user.IsFollow,
+	}
+	return result, err
+}
+
+// SetPassword 设置密码
 func (user *User) SetPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), PassWordCost)
 	if err != nil {
@@ -62,7 +79,7 @@ func (user *User) SetPassword(password string) error {
 	return nil
 }
 
-//CheckPassword 校验密码
+// CheckPassword 校验密码
 func (user *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil

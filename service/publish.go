@@ -12,6 +12,9 @@ import (
 	"strconv"
 )
 
+// Publish
+// @Description 上传视频
+// @Author Zihao_Li 2023-02-05 13:28:11
 func Publish(data *multipart.FileHeader, user entity.User) (string, string) {
 	filename := filepath.Base(data.Filename)
 	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
@@ -19,11 +22,14 @@ func Publish(data *multipart.FileHeader, user entity.User) (string, string) {
 	return saveFile, finalName
 }
 
+// InsertVideo
+// @Description  将视频信息保存到数据库
+// @Author Zihao_Li 2023-02-05 13:28:42
 func InsertVideo(info os.FileInfo, user entity.User) (err error) {
 	path := info.Name()
 
 	video := &entity.Video{
-		AuthorID:      strconv.FormatInt(user.Id, 10),
+		AuthorID:      int(user.Id),
 		AuthorName:    user.Name,
 		PlayUrl:       path,
 		CoverUrl:      "",
@@ -39,13 +45,36 @@ func InsertVideo(info os.FileInfo, user entity.User) (err error) {
 	return
 }
 
-func GetVideoList(userid string) (videos []entity.ApiVideo, err error) {
-	result, _ := mysql.GetUserAllVideos(userid)
-	//TODO: 调用方法：根据用户id获取用户信息
-	// method()
+// GetVideoList
+// @Description 获取视频列表
+// @Author Zihao_Li 2023-02-05 13:28:57
+func GetVideoList(userstr string) (videos []entity.ApiVideo, err error) {
+	userid, err := strconv.Atoi(userstr)
+	if err != nil {
+		return nil, err
+	}
+	user, err := mysql.GetUserInfo(userid)
+	if err != nil {
+		err = errors.New("user not exit")
+		return nil, err
+	}
+	result, _ := mysql.GetUserAllVideos(user.Name)
 	if result == nil {
 		err = errors.New("videos not exit")
 		return videos, err
 	}
+
+	for _, video := range result {
+		midData := entity.ApiVideo{
+			User:          user,
+			PlayUrl:       video.PlayUrl,
+			CoverUrl:      video.CoverUrl,
+			FavoriteCount: video.FavoriteCount,
+			CommentCount:  video.CommentCount,
+			IsFavorite:    video.IsFavorite,
+		}
+		videos = append(videos, midData)
+	}
+
 	return videos, err
 }

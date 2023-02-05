@@ -68,6 +68,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 		Token:    token,
 	}
 }
+
 func (service *UserService) Login() *entity.UserRegisterResponse {
 	var user mysql.User
 	code := e.CodeFailed
