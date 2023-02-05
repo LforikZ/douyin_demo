@@ -40,28 +40,6 @@ func Register(c *gin.Context) {
 			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorParams},
 		})
 	}
-	//username := c.Query("username")
-	//password := c.Query("password")
-	//
-	//token := username + password
-	//
-	//if _, exist := usersLoginInfo[token]; exist {
-	//	c.JSON(http.StatusOK, UserLoginResponse{
-	//		Response: Response{StatusCode: 1, StatusMsg: "User already exist"},
-	//	})
-	//} else {
-	//	atomic.AddInt64(&userIdSequence, 1)
-	//	newUser := entity.User{
-	//		Id:   userIdSequence,
-	//		Name: username,
-	//	}
-	//	usersLoginInfo[token] = newUser
-	//	c.JSON(http.StatusOK, UserLoginResponse{
-	//		Response: Response{StatusCode: 0},
-	//		UserId:   userIdSequence,
-	//		Token:    username + password,
-	//	})
-	//}
 }
 
 func Login(c *gin.Context) {

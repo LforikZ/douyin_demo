@@ -29,7 +29,7 @@ func InsertVideo(info os.FileInfo, user entity.User) (err error) {
 	path := info.Name()
 
 	video := &entity.Video{
-		AuthorID:      strconv.FormatInt(user.Id, 10),
+		AuthorID:      int(user.Id),
 		AuthorName:    user.Name,
 		PlayUrl:       path,
 		CoverUrl:      "",
@@ -48,18 +48,25 @@ func InsertVideo(info os.FileInfo, user entity.User) (err error) {
 // GetVideoList
 // @Description 获取视频列表
 // @Author Zihao_Li 2023-02-05 13:28:57
-func GetVideoList(userid uint) (videos []entity.ApiVideo, err error) {
-	result, _ := mysql.GetUserAllVideos(userid)
+func GetVideoList(userstr string) (videos []entity.ApiVideo, err error) {
+	userid, err := strconv.Atoi(userstr)
+	if err != nil {
+		return nil, err
+	}
+	user, err := mysql.GetUserInfo(userid)
+	if err != nil {
+		err = errors.New("user not exit")
+		return nil, err
+	}
+	result, _ := mysql.GetUserAllVideos(user.Name)
 	if result == nil {
 		err = errors.New("videos not exit")
 		return videos, err
 	}
 
 	for _, video := range result {
-		//TODO: 调用方法：根据用户id获取用户信息
-		// method()
 		midData := entity.ApiVideo{
-			User:          nil,
+			User:          user,
 			PlayUrl:       video.PlayUrl,
 			CoverUrl:      video.CoverUrl,
 			FavoriteCount: video.FavoriteCount,

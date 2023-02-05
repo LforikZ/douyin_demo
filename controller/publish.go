@@ -70,17 +70,26 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	token := c.Param("token")
-	userInfo, err := util.ParseToken(token)
-	if err != nil {
+	// 获取参数，并判断参数是否有效
+	var p entity.ParamTokenUID
+	if err := c.ShouldBindQuery(&p); err != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: CodeFailed,
-			StatusMsg:  UserNotExit,
+			StatusMsg:  ParamsError,
 		})
+		return
+	}
+	// 验证token是否有效
+	authentication, s := util.Authentication(p.Token)
+	if authentication == false {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: CodeFailed,
+			StatusMsg:  s,
+		})
+		return
 	}
 
-	userid := userInfo.Id
-	videoList, err := service.GetVideoList(userid)
+	videoList, err := service.GetVideoList(p.UserID)
 	if err != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: CodeFailed,
