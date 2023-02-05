@@ -23,7 +23,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 	var code = e.CodeFailed
 	var user mysql.User
 	var count int64
-	count = mysql.RegisterAuth((*mysql.UserService)(service), &user)
+	count = mysql.RegisterAuth(service.Name, &user)
 
 	// 表单验证
 	if count == 1 {
@@ -75,7 +75,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 func (service *UserService) Login() *entity.UserRegisterResponse {
 	var user mysql.User
 	code := e.CodeFailed
-	if err := mysql.LoginAuth((*mysql.UserService)(service), &user); err != nil {
+	if err := mysql.LoginAuth(service.Name, &user); err != nil {
 		// 如果查询不到，返回相应的错误
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
 			return &entity.UserRegisterResponse{
