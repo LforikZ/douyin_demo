@@ -22,7 +22,7 @@ type UserService struct {
 }
 
 type InfoService struct {
-	id   int64  `form:"id" json:"id" binding:"required"`
+	Id   int64  `form:"id" json:"id" binding:"required"`
 	Name string `form:"username" json:"username" binding:"required,max=32"`
 }
 

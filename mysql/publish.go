@@ -3,6 +3,7 @@ package mysql
 
 import (
 	"database/sql"
+
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,7 @@ type Video struct {
 	FavoriteCount int64  `gorm:"default 0"`     //收藏计数
 	CommentCount  int64  `gorm:"default 0"`     //评论计数
 	IsFavorite    bool   `gorm:"default false"` //是否收藏
+	Title         string `gorm:"title"`         //视频标题
 }
 
 func Insert(video *entity.Video) (err error) {

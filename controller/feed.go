@@ -7,8 +7,6 @@ import (
 
 	"github.com/RaymondCode/simple-demo/service"
 
-	"github.com/RaymondCode/simple-demo/entity"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +20,7 @@ func Feed(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusOK, Response{
 				StatusCode: CodeFailed,
-				StatusMsg:  ParamRequestError,
+				StatusMsg:  ParamsError,
 			})
 			return
 		}
@@ -36,7 +34,7 @@ func Feed(c *gin.Context) {
 	userId, _ := GetIdByToken(token)
 	// 返回视频给用户
 	if videoLists := service.Feed(userId, latestTime); len(videoLists) > 0 {
-		c.JSON(http.StatusOK, entity.FeedResponse{
+		c.JSON(http.StatusOK, FeedResponse{
 			Response:  Response{StatusCode: 0},
 			VideoList: videoLists,
 			NextTime:  time.Now().Unix(),
