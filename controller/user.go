@@ -124,30 +124,31 @@ func UserInfo(c *gin.Context) {
 				c.JSON(http.StatusOK, res.User)
 			}
 		}
-	}
-
-	token := c.Query("token") //get请求，url截取token参数
-	var claim *util.Claims
-	if token == "" {
-		c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "错误: 没找到token!(" + e.ErrorNotToken + ")"})
-		return
 	} else {
-		claims, err := util.ParseToken(token)
-		claim = claims
-		if err != nil {
-			c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "解析token失败QAQ(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
+		token := c.Query("token") //get请求，url截取token参数
+		var claim *util.Claims
+		if token == "" {
+			c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "错误: 没找到token!(" + e.ErrorNotToken + ")"})
 			return
-		} else if time.Now().Unix() > claims.ExpiresAt {
-			c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "WARN：token未在有效期QAQ(" + e.ErrorAuthCheckTokenTimeout + ")"})
-			return
+		} else {
+			claims, err := util.ParseToken(token)
+			claim = claims
+			if err != nil {
+				c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "解析token失败QAQ(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
+				return
+			} else if time.Now().Unix() > claims.ExpiresAt {
+				c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "WARN：token未在有效期QAQ(" + e.ErrorAuthCheckTokenTimeout + ")"})
+				return
+			}
+		} //token分析
+
+		res := infoService.InfoByToken(claim.Id, claim.Username)
+		if res.StatusCode == 1 {
+			c.JSON(http.StatusBadRequest, res.Response)
+		} else {
+			c.JSON(http.StatusOK, res.User)
 		}
-	} //token分析
 
-	res := infoService.InfoByToken(claim.Id, claim.Username)
-	if res.StatusCode == 1 {
-		c.JSON(http.StatusBadRequest, res.Response)
-	} else {
-		c.JSON(http.StatusOK, res.User)
 	}
 
 	//if user, exist := usersLoginInfo[token]; exist {
