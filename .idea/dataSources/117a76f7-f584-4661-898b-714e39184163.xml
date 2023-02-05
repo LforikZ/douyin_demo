@@ -1042,7 +1042,7 @@ douyin|schema||douyin||UPDATE|G</Grants>
       <Position>1</Position>
     </column>
     <column id="287" parent="225" name="id">
-      <AutoIncrement>8</AutoIncrement>
+      <AutoIncrement>10</AutoIncrement>
       <DataType>bigint(20) unsigned|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>

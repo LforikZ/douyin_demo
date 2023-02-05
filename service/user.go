@@ -45,7 +45,8 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 		}
 	}
 	//生成token
-	token, err := util.GenerateToken(user.ID, service.Name, 0)
+	token, err := util.GenerateToken((int64)(user.ID), user.Name, user.FollowCount,
+		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorAuthToken},
@@ -80,7 +81,6 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 				},
 				Token: "",
 			}
-
 		}
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{
@@ -100,7 +100,8 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 			Token: "",
 		}
 	}
-	token, err := util.GenerateToken(user.ID, service.Name, 0)
+	token, err := util.GenerateToken((int64)(user.ID), user.Name, user.FollowCount,
+		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{
@@ -121,7 +122,7 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 	}
 }
 
-func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
+func (service *InfoService) Info(id int64, name string) *entity.UserResponse {
 	var user mysql.User
 	err := mysql.InfoAuth(&user, id)
 	if err != nil {
@@ -143,6 +144,7 @@ func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
 			User: user,
 		}
 	}
+
 	code := e.CodeSuccess
 	return &entity.UserResponse{
 		Response: entity.Response{

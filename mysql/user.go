@@ -47,7 +47,7 @@ func LoginAuth(service *UserService, user *User) error {
 	return err
 }
 
-func InfoAuth(user *User, id uint) error {
+func InfoAuth(user *User, id int64) error {
 	err := db.Where("id=?", id).First(&user).Error
 	return err
 }
