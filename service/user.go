@@ -49,8 +49,11 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
-			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorAuthToken},
-			Token:    "",
+			Response: entity.Response{
+				StatusCode: code,
+				StatusMsg:  e.ErrorAuthToken,
+			},
+			Token: "",
 		}
 	}
 	// 创建用户

@@ -10,7 +10,7 @@ import (
 )
 
 var db *gorm.DB
-var Db *gorm.DB
+
 
 func Init(cfg *settings.MySQLConfig) error {
 	//grom 2。0 之后的连接方式

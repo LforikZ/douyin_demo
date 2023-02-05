@@ -39,7 +39,7 @@ func CreateUser(user *User) error {
 
 func RegisterAuth(service *UserService, user *User) int64 {
 	var count int64
-	db.Model(User{}).Where("name=?", service.Name).First(&user).Count(&count)
+	db.Model(User{}).Where("name=?", service.Name).Find(&user).Count(&count)
 	return count
 }
 
@@ -49,7 +49,7 @@ func LoginAuth(service *UserService, user *User) error {
 }
 
 func InfoAuth(user *User, id int64) error {
-	err := db.Where("id=?", id).First(&user).Error
+	err := db.Where("id=?", id).Find(&user).Error
 	return err
 }
 
