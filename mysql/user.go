@@ -16,16 +16,6 @@ type User struct {
 	IsFollow      bool
 }
 
-type UserService struct {
-	Name     string `form:"username" json:"username" binding:"required,max=32"`
-	Password string `form:"password" json:"password" binding:"required,max=32"`
-}
-
-type InfoService struct {
-	Id   int64  `form:"id" json:"id" binding:"required"`
-	Name string `form:"username" json:"username" binding:"required,max=32"`
-}
-
 const (
 	PassWordCost = 12 //密码加密难度
 )
@@ -37,19 +27,19 @@ func CreateUser(user *User) error {
 	return nil
 }
 
-func RegisterAuth(service *UserService, user *User) int64 {
+func RegisterAuth(Name string, user *User) int64 {
 	var count int64
-	db.Model(User{}).Where("name=?", service.Name).First(&user).Count(&count)
+	db.Model(User{}).Where("name=?", Name).Find(&user).Count(&count)
 	return count
 }
 
-func LoginAuth(service *UserService, user *User) error {
-	err := db.Where("name=?", service.Name).First(&user).Error
+func LoginAuth(Name string, user *User) error {
+	err := db.Where("name=?", Name).Find(&user).Error
 	return err
 }
 
-func InfoAuth(user *User, id uint) error {
-	err := db.Where("id=?", id).First(&user).Error
+func InfoAuth(user *User, id int64) error {
+	err := db.Where("id=?", id).Find(&user).Error
 	return err
 }
 

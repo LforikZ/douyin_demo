@@ -6,15 +6,9 @@ import (
 
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
+	"strconv"
 )
 
-//	type User struct {
-//		Id            int64  `json:"id,omitempty"`
-//		Name          string `json:"name,omitempty"`
-//		FollowCount   int64  `json:"follow_count,omitempty"`
-//		FollowerCount int64  `json:"follower_count,omitempty"`
-//		IsFollow      bool   `json:"is_follow,omitempty"`
-//	}
 type Video struct {
 	gorm.Model
 	AuthorID      string `gorm:"notnull"`       //作者id
@@ -28,7 +22,16 @@ type Video struct {
 }
 
 func Insert(video *entity.Video) (err error) {
-	if result := db.Create(&video); result.Error != nil {
+	vi := Video{
+		AuthorID:      strconv.Itoa(video.AuthorID),
+		AuthorName:    video.AuthorName,
+		PlayUrl:       video.PlayUrl,
+		CoverUrl:      video.CoverUrl,
+		FavoriteCount: 0,
+		CommentCount:  0,
+		IsFavorite:    false,
+	}
+	if result := db.Create(&vi); result.Error != nil {
 		return result.Error
 	}
 	return

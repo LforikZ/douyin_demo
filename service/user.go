@@ -23,7 +23,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 	var code = e.CodeFailed
 	var user mysql.User
 	var count int64
-	count = mysql.RegisterAuth((*mysql.UserService)(service), &user)
+	count = mysql.RegisterAuth(service.Name, &user)
 
 	// 表单验证
 	if count == 1 {
@@ -45,11 +45,15 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 		}
 	}
 	//生成token
-	token, err := util.GenerateToken(user.ID, service.Name, 0)
+	token, err := util.GenerateToken((int64)(user.ID), user.Name, user.FollowCount,
+		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
-			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorAuthToken},
-			Token:    "",
+			Response: entity.Response{
+				StatusCode: code,
+				StatusMsg:  e.ErrorAuthToken,
+			},
+			Token: "",
 		}
 	}
 	// 创建用户
@@ -71,7 +75,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 func (service *UserService) Login() *entity.UserRegisterResponse {
 	var user mysql.User
 	code := e.CodeFailed
-	if err := mysql.LoginAuth((*mysql.UserService)(service), &user); err != nil {
+	if err := mysql.LoginAuth(service.Name, &user); err != nil {
 		// 如果查询不到，返回相应的错误
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
 			return &entity.UserRegisterResponse{
@@ -81,7 +85,6 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 				},
 				Token: "",
 			}
-
 		}
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{
@@ -101,7 +104,8 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 			Token: "",
 		}
 	}
-	token, err := util.GenerateToken(user.ID, service.Name, 0)
+	token, err := util.GenerateToken((int64)(user.ID), user.Name, user.FollowCount,
+		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{
@@ -122,7 +126,7 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 	}
 }
 
-func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
+func (service *InfoService) Info(id int64, name string) *entity.UserResponse {
 	var user mysql.User
 	err := mysql.InfoAuth(&user, id)
 	if err != nil {
@@ -144,6 +148,7 @@ func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
 			User: user,
 		}
 	}
+
 	code := e.CodeSuccess
 	return &entity.UserResponse{
 		Response: entity.Response{
