@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-//验证token
-//传入参数：token
-//输出：是否通过验证，错误信息。如果验证通过，错误信息为空。
+// Authentication 验证token
+// 传入参数：token
+// 输出：是否通过验证，错误信息。如果验证通过，错误信息为空。
 func Authentication(token string) (bool, string) {
 	res := false
 	msg := ""

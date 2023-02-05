@@ -30,23 +30,6 @@ type UserResponse struct {
 
 var userIdSequence = int64(1)
 
-//type UserRegisterResponse struct {
-//	Response
-//	UserId int64  `json:"user_id,omitempty"`
-//	Token  string `json:"token"`
-//}
-//
-//type UserLoginResponse struct {
-//	Response
-//	UserId int64  `json:"user_id,omitempty"`
-//	Token  string `json:"token"`
-//}
-//
-//type UserResponse struct {
-//	Response
-//	User entity.User `json:"user"`
-//}
-
 func Register(c *gin.Context) {
 	var userRegisterService service.UserService
 	if err := c.ShouldBind(&userRegisterService); err == nil {
