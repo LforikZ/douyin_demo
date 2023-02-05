@@ -7,13 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
-	Id            int64  `json:"id,omitempty"`
-	Name          string `json:"name,omitempty"`
-	FollowCount   int64  `json:"follow_count,omitempty"`
-	FollowerCount int64  `json:"follower_count,omitempty"`
-	IsFollow      bool   `json:"is_follow,omitempty"`
-}
 type Video struct {
 	gorm.Model
 	AuthorID      string `gorm:"notnull"`       //作者id
@@ -26,7 +19,7 @@ type Video struct {
 }
 
 func Insert(video *entity.Video) (err error) {
-	if result := db.Create(&video); result.Error != nil {
+	if result := Db.Create(&video); result.Error != nil {
 		return result.Error
 	}
 	return
@@ -34,7 +27,7 @@ func Insert(video *entity.Video) (err error) {
 
 func GetUserAllVideos(userID string) (a []entity.ApiVideo, err error) {
 	var videos []Video
-	if result := db.Where("author_name=?", userID).Find(&videos); result.Error == sql.ErrNoRows {
+	if result := Db.Where("author_name=?", userID).Find(&videos); result.Error == sql.ErrNoRows {
 		err = result.Error
 	}
 	for _, video := range videos {

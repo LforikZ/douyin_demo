@@ -119,7 +119,7 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 	}
 }
 
-func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
+func (service *InfoService) InfoByToken(id uint, name string) *entity.UserResponse {
 	var user mysql.User
 	err := mysql.Db.Where("id=?", id).First(&user).Error
 	if err != nil {
@@ -150,5 +150,29 @@ func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
 		User: entity.User{Name: user.Name, Id: int64(user.ID),
 			FollowCount: user.FollowCount, FollowerCount: user.FollowerCount,
 			IsFollow: user.IsFollow},
+	}
+}
+
+func (service *InfoService) InfoByID(id uint) *entity.UserResponse {
+	var userSelect mysql.User
+	user, err := userSelect.GetUserByID(id)
+	if err != nil {
+		user := entity.User{int64(user.ID), "", 0, 0, false}
+		return &entity.UserResponse{
+			Response: entity.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			},
+			User: user,
+		}
+	} else {
+		user := entity.User{Name: user.Name, Id: int64(id), FollowCount: user.FollowCount, FollowerCount: user.FollowerCount, IsFollow: user.IsFollow}
+		return &entity.UserResponse{
+			Response: entity.Response{
+				StatusCode: 0,
+				StatusMsg:  e.UserSelectSuccess,
+			},
+			User: user,
+		}
 	}
 }

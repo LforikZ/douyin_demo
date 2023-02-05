@@ -7,6 +7,7 @@ import (
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -111,6 +112,20 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
+	var infoService service.InfoService
+	id := c.Query("id") //get请求，url截取id参数
+	if id != "" {
+		userId, err := strconv.Atoi(id)
+		if err == nil {
+			res := infoService.InfoByID(uint(userId))
+			if res.StatusCode == 1 {
+				c.JSON(http.StatusBadRequest, res.Response)
+			} else {
+				c.JSON(http.StatusOK, res.User)
+			}
+		}
+	}
+
 	token := c.Query("token") //get请求，url截取token参数
 	var claim *util.Claims
 	if token == "" {
@@ -128,8 +143,7 @@ func UserInfo(c *gin.Context) {
 		}
 	} //token分析
 
-	var infoService service.InfoService
-	res := infoService.Info(claim.Id, claim.Username)
+	res := infoService.InfoByToken(claim.Id, claim.Username)
 	if res.StatusCode == 1 {
 		c.JSON(http.StatusBadRequest, res.Response)
 	} else {
