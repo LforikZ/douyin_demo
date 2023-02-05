@@ -15,11 +15,44 @@ type User struct {
 	IsFollow      bool
 }
 
+type UserService struct {
+	Name     string `form:"username" json:"username" binding:"required,max=32"`
+	Password string `form:"password" json:"password" binding:"required,max=32"`
+}
+
+type InfoService struct {
+	id   int64  `form:"id" json:"id" binding:"required"`
+	Name string `form:"username" json:"username" binding:"required,max=32"`
+}
+
 const (
 	PassWordCost = 12 //密码加密难度
 )
 
-// SetPassword 设置密码
+func CreateUser(user *User) error {
+	if err := db.Create(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func RegisterAuth(service *UserService, user *User) int64 {
+	var count int64
+	db.Model(User{}).Where("name=?", service.Name).First(&user).Count(&count)
+	return count
+}
+
+func LoginAuth(service *UserService, user *User) error {
+	err := db.Where("name=?", service.Name).First(&user).Error
+	return err
+}
+
+func InfoAuth(user *User, id uint) error {
+	err := db.Where("id=?", id).First(&user).Error
+	return err
+}
+
+//SetPassword 设置密码
 func (user *User) SetPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), PassWordCost)
 	if err != nil {
@@ -29,16 +62,8 @@ func (user *User) SetPassword(password string) error {
 	return nil
 }
 
-// CheckPassword 校验密码
+//CheckPassword 校验密码
 func (user *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil
-}
-
-func (user *User) GetUserByID(id uint) (u User, err error) {
-	var use User
-	if result := Db.Where("id=?", id).Find(&use); result.Error != nil {
-		err = result.Error
-	}
-	return use, err
 }

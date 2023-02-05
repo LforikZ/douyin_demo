@@ -20,10 +20,11 @@ type InfoService struct {
 }
 
 func (service *UserService) Register() *entity.UserRegisterResponse {
-	code := e.CodeFailed
+	var code = e.CodeFailed
 	var user mysql.User
 	var count int64
-	mysql.Db.Model(&mysql.User{}).Where("name=?", service.Name).First(&user).Count(&count)
+	count = mysql.RegisterAuth((*mysql.UserService)(service), &user)
+
 	// 表单验证
 	if count == 1 {
 		return &entity.UserRegisterResponse{
@@ -52,7 +53,8 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 		}
 	}
 	// 创建用户
-	if err := mysql.Db.Create(&user).Error; err != nil {
+	err = mysql.CreateUser(&user)
+	if err != nil {
 		return &entity.UserRegisterResponse{
 			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorDatabase},
 			Token:    "",
@@ -68,7 +70,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 func (service *UserService) Login() *entity.UserRegisterResponse {
 	var user mysql.User
 	code := e.CodeFailed
-	if err := mysql.Db.Where("name=?", service.Name).First(&user).Error; err != nil {
+	if err := mysql.LoginAuth((*mysql.UserService)(service), &user); err != nil {
 		// 如果查询不到，返回相应的错误
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
 			return &entity.UserRegisterResponse{
@@ -119,9 +121,9 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 	}
 }
 
-func (service *InfoService) InfoByToken(id uint, name string) *entity.UserResponse {
+func (service *InfoService) Info(id uint, name string) *entity.UserResponse {
 	var user mysql.User
-	err := mysql.Db.Where("id=?", id).First(&user).Error
+	err := mysql.InfoAuth(&user, id)
 	if err != nil {
 		user := entity.User{Name: name, Id: service.id}
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
@@ -150,29 +152,5 @@ func (service *InfoService) InfoByToken(id uint, name string) *entity.UserRespon
 		User: entity.User{Name: user.Name, Id: int64(user.ID),
 			FollowCount: user.FollowCount, FollowerCount: user.FollowerCount,
 			IsFollow: user.IsFollow},
-	}
-}
-
-func (service *InfoService) InfoByID(id uint) *entity.UserResponse {
-	var userSelect mysql.User
-	user, err := userSelect.GetUserByID(id)
-	if err != nil {
-		user := entity.User{int64(user.ID), "", 0, 0, false}
-		return &entity.UserResponse{
-			Response: entity.Response{
-				StatusCode: 1,
-				StatusMsg:  err.Error(),
-			},
-			User: user,
-		}
-	} else {
-		user := entity.User{Name: user.Name, Id: int64(id), FollowCount: user.FollowCount, FollowerCount: user.FollowerCount, IsFollow: user.IsFollow}
-		return &entity.UserResponse{
-			Response: entity.Response{
-				StatusCode: 0,
-				StatusMsg:  e.UserSelectSuccess,
-			},
-			User: user,
-		}
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var Db *gorm.DB
+var db *gorm.DB
 
 func Init(cfg *settings.MySQLConfig) error {
 	//grom 2。0 之后的连接方式
@@ -21,18 +21,18 @@ func Init(cfg *settings.MySQLConfig) error {
 		cfg.DbName,
 	)
 	var err error
-	Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil // panic(fmt.Errorf("gorm open error: %s\n", err))
 	}
 	//TODO:将表配置到数据库中去
-	if err := Db.AutoMigrate(
+	if err := db.AutoMigrate(
 		&Video{},
 	); err != nil {
 		fmt.Println(err)
 		return nil
 	}
-	a, err := Db.DB()
+	a, err := db.DB()
 	a.SetMaxOpenConns(cfg.MaxOpenConns)
 	a.SetMaxIdleConns(cfg.MaxIdleConns)
 	return nil
@@ -40,7 +40,7 @@ func Init(cfg *settings.MySQLConfig) error {
 }
 
 func Close() {
-	a, err := Db.DB()
+	a, err := db.DB()
 	err = a.Close()
 	if err != nil {
 		fmt.Println(err)
