@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/pkg/e"
 	"github.com/RaymondCode/simple-demo/pkg/util"
@@ -128,10 +127,7 @@ func UserInfo(c *gin.Context) {
 			return
 		}
 	} //token分析
-	check,_ := util.Authentication(token)
-	if check!=false {
-		fmt.Println("check success")
-	}
+
 	var infoService service.InfoService
 	res := infoService.Info(claim.Id, claim.Username)
 	if res.StatusCode == 1 {
