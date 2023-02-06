@@ -9,6 +9,7 @@ import (
 
 type User struct {
 	gorm.Model
+	Uid           int64  `gorm:"unique"`
 	Name          string `gorm:"unique"`
 	Password      string
 	FollowCount   int64
@@ -39,7 +40,7 @@ func LoginAuth(Name string, user *User) error {
 }
 
 func InfoAuth(user *User, id int64) error {
-	err := db.Where("id=?", id).Find(&user).Error
+	err := db.Where("uid=?", id).Find(&user).Error
 	return err
 }
 
@@ -50,7 +51,7 @@ func GetUserInfo(id int) (result *entity.User, err error) {
 		return result, err
 	}
 	result = &entity.User{
-		Id:            int64(user.ID),
+		Id:            user.Uid,
 		Name:          user.Name,
 		FollowCount:   user.FollowerCount,
 		FollowerCount: user.FollowCount,

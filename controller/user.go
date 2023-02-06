@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/pkg/e"
 	"github.com/RaymondCode/simple-demo/pkg/util"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -56,6 +59,7 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
+
 	token := c.Query("token") //get请求，url截取token参数
 	var claim *util.Claims
 	if token == "" {
@@ -64,6 +68,7 @@ func UserInfo(c *gin.Context) {
 	} else {
 		claims, err := util.ParseToken(token)
 		claim = claims
+
 		if err != nil {
 			c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "解析token失败QAQ(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
 			return
@@ -72,12 +77,22 @@ func UserInfo(c *gin.Context) {
 			return
 		}
 	} //token分析
-
+	id := c.Query("user_id")
+	fmt.Println(reflect.TypeOf(id))
+	fmt.Println(reflect.TypeOf(claim.Id))
+	sid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	if sid != claim.Id {
+		c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "id与token不符(" + e.ErrorAuthCheckTokenFail + " or " + e.ErrorAuth + ")"})
+		return
+	}
 	var infoService service.InfoService
 	res := infoService.Info(claim.Id, claim.Username)
 	if res.StatusCode == 1 {
 		c.JSON(http.StatusBadRequest, res.Response)
 	} else {
-		c.JSON(http.StatusOK, res.User)
+		c.JSON(http.StatusOK, res)
 	}
 }

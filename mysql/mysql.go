@@ -11,7 +11,6 @@ import (
 
 var db *gorm.DB
 
-
 func Init(cfg *settings.MySQLConfig) error {
 	//grom 2。0 之后的连接方式
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
@@ -28,7 +27,7 @@ func Init(cfg *settings.MySQLConfig) error {
 	}
 	//TODO:将表配置到数据库中去
 	if err := db.AutoMigrate(
-		&Video{},
+		&Video{}, &User{},
 	); err != nil {
 		fmt.Println(err)
 		return nil

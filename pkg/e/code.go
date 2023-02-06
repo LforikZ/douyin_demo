@@ -9,8 +9,9 @@ const (
 	UploadSuccess = " uploaded successfully"
 	UserNotExit   = "User doesn't exist"
 	//user
-	RegisterSuccess     = "register successfully"
+	RegisterSuccess     = "Register successfully"
 	ErrorExistUser      = "User already exists"
+	ErrorNotExistUser   = "User not exits"
 	ErrorParams         = "Params Error"
 	ErrorFailEncryption = "Password encryption failed"
 	UserSelectSuccess   = "user select successfully"

@@ -66,11 +66,6 @@ func GetUserInfo(token string) (*entity.User, error) {
 		return nil, errors.New(msg)
 	}
 	claims, err := ParseToken(token)
-	//if err != nil {
-	//	return nil, errors.New("token过期了")
-	//} else if time.Now().Unix() > claims.ExpiresAt {
-	//	return nil, errors.New("token过期了")
-	//}
 	user.Id = claims.Id
 	user.Name = claims.Username
 	user.FollowCount = claims.FollowCount

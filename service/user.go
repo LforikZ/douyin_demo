@@ -32,6 +32,7 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 			Token:    "",
 		}
 	}
+	user.Uid = util.GetID()
 	user.Name = service.Name
 	user.FollowerCount = 0
 	user.FollowCount = 0
@@ -44,8 +45,16 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 			Token:    "",
 		}
 	}
+	// 创建用户
+	err := mysql.CreateUser(&user)
+	if err != nil {
+		return &entity.UserRegisterResponse{
+			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorDatabase},
+			Token:    "",
+		}
+	}
 	//生成token
-	token, err := util.GenerateToken((int64)(user.ID), user.Name, user.FollowCount,
+	token, err := util.GenerateToken(user.Uid, user.Name, user.FollowCount,
 		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
@@ -56,18 +65,11 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 			Token: "",
 		}
 	}
-	// 创建用户
-	err = mysql.CreateUser(&user)
-	if err != nil {
-		return &entity.UserRegisterResponse{
-			Response: entity.Response{StatusCode: code, StatusMsg: e.ErrorDatabase},
-			Token:    "",
-		}
-	}
+
 	code = e.CodeSuccess
 	return &entity.UserRegisterResponse{
 		Response: entity.Response{StatusCode: code, StatusMsg: e.RegisterSuccess},
-		UserId:   int64(user.ID),
+		UserId:   user.Uid,
 		Token:    token,
 	}
 }
@@ -75,6 +77,15 @@ func (service *UserService) Register() *entity.UserRegisterResponse {
 func (service *UserService) Login() *entity.UserRegisterResponse {
 	var user mysql.User
 	code := e.CodeFailed
+	count := mysql.RegisterAuth(service.Name, &user)
+
+	// 表单验证
+	if count == 0 {
+		return &entity.UserRegisterResponse{
+			Response: entity.Response{StatusCode: 1, StatusMsg: e.ErrorNotExistUser},
+			Token:    "",
+		}
+	}
 	if err := mysql.LoginAuth(service.Name, &user); err != nil {
 		// 如果查询不到，返回相应的错误
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
@@ -104,7 +115,7 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 			Token: "",
 		}
 	}
-	token, err := util.GenerateToken((int64)(user.ID), user.Name, user.FollowCount,
+	token, err := util.GenerateToken(user.Uid, user.Name, user.FollowCount,
 		user.FollowerCount, user.IsFollow, 0)
 	if err != nil {
 		return &entity.UserRegisterResponse{
@@ -121,14 +132,14 @@ func (service *UserService) Login() *entity.UserRegisterResponse {
 			StatusCode: code,
 			StatusMsg:  e.LoginSuccess,
 		},
-		UserId: int64(user.ID),
+		UserId: user.Uid,
 		Token:  token,
 	}
 }
 
-func (service *InfoService) Info(id int64, name string) *entity.UserResponse {
+func (service *InfoService) Info(uid int64, name string) *entity.UserResponse {
 	var user mysql.User
-	err := mysql.InfoAuth(&user, id)
+	err := mysql.InfoAuth(&user, uid)
 	if err != nil {
 		user := entity.User{Name: name, Id: service.id}
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
@@ -155,7 +166,7 @@ func (service *InfoService) Info(id int64, name string) *entity.UserResponse {
 			StatusCode: code,
 			StatusMsg:  e.UserSelectSuccess,
 		},
-		User: entity.User{Name: user.Name, Id: int64(user.ID),
+		User: entity.User{Name: user.Name, Id: user.Uid,
 			FollowCount: user.FollowCount, FollowerCount: user.FollowerCount,
 			IsFollow: user.IsFollow},
 	}
