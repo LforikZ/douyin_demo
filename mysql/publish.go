@@ -11,14 +11,15 @@ import (
 
 type Video struct {
 	gorm.Model
+	VideoID       string `gorm:"notnull"`       //视频id
 	AuthorID      string `gorm:"notnull"`       //作者id
+	Title         string `gorm:"title"`         //视频标题
 	AuthorName    string `gorm:"notnull"`       //作者姓名
 	PlayUrl       string `gorm:"notnull"`       //视频地址
 	CoverUrl      string `gorm:"notnull"`       //封面网址
 	FavoriteCount int64  `gorm:"default 0"`     //收藏计数
 	CommentCount  int64  `gorm:"default 0"`     //评论计数
 	IsFavorite    bool   `gorm:"default false"` //是否收藏
-	Title         string `gorm:"title"`         //视频标题
 }
 
 func Insert(video *entity.Video) (err error) {
