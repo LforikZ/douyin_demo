@@ -23,3 +23,9 @@ type VideoListResponse struct {
 	Response
 	VideoList []entity.ApiVideo `json:"video_list"`
 }
+
+type FeedResponse struct {
+	Response
+	VideoList []entity.ApiVideo `json:"video_list,omitempty"`
+	NextTime  int64             `json:"next_time,omitempty"`
+}
