@@ -26,6 +26,10 @@ const (
 	ErrorAuthToken             = "Token generation failed"
 	ErrorAuth                  = "Token mismatch"
 	ErrorDatabase              = "Database operation error, please try again"
+
+	//follow
+	FollowSuccess   = "Follow successfully"
+	UnfollowSuccess = "Unfollow successfully"
 )
 
 type Response struct {
