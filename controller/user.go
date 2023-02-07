@@ -1,14 +1,12 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/pkg/e"
 	"github.com/RaymondCode/simple-demo/pkg/util"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"reflect"
 	"strconv"
 	"time"
 )
@@ -78,8 +76,6 @@ func UserInfo(c *gin.Context) {
 		}
 	} //token分析
 	id := c.Query("user_id")
-	fmt.Println(reflect.TypeOf(id))
-	fmt.Println(reflect.TypeOf(claim.Id))
 	sid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		panic(err)
