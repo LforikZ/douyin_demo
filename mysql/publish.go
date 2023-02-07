@@ -3,6 +3,7 @@ package mysql
 
 import (
 	"database/sql"
+	"github.com/RaymondCode/simple-demo/pkg/util"
 
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ import (
 
 type Video struct {
 	gorm.Model
-	VideoID       string `gorm:"notnull"`       //视频id
+	VideoID       int64  `gorm:"notnull"`       //视频id
 	AuthorID      string `gorm:"notnull"`       //作者id
 	Title         string `gorm:"title"`         //视频标题
 	AuthorName    string `gorm:"notnull"`       //作者姓名
@@ -24,6 +25,7 @@ type Video struct {
 
 func Insert(video *entity.Video) (err error) {
 	vi := Video{
+		VideoID:       util.GenID(),
 		AuthorID:      strconv.Itoa(video.AuthorID),
 		AuthorName:    video.AuthorName,
 		PlayUrl:       video.PlayUrl,
@@ -55,4 +57,10 @@ func GetUserAllVideos(userName string) (a []entity.ApiVideo, err error) {
 		a = append(a, midData)
 	}
 	return a, err
+}
+
+func GetVideoByVid(videoID int64) (*Video, error) {
+	var video *Video
+	result := db.Where("video_id=?", videoID).Find(&video)
+	return video, result.Error
 }

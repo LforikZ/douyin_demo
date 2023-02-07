@@ -78,3 +78,14 @@ func GetVideoList(userstr string) (videos []entity.ApiVideo, err error) {
 
 	return videos, err
 }
+
+// GetVideoByVid
+// @Description  根据视频id获取视频信息
+// @Author Zihao_Li 2023-02-07 13:46:45
+func GetVideoByVid(videoid int64) (video *mysql.Video, err error) {
+	video, err = mysql.GetVideoByVid(videoid)
+	if err != nil {
+		return nil, err
+	}
+	return video, err
+}

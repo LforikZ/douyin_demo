@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/RaymondCode/simple-demo/controller"
 	"log"
 	"net/http"
 	"os"
@@ -35,6 +36,12 @@ func main() {
 	}
 	fmt.Println("连接数据库成功")
 	defer mysql.Close()
+
+	//初始化gin框架内置的校验器使用的翻译器
+	if err := controller.InitTrans("zh"); err != nil {
+		fmt.Printf("init translate failed，err：%v\n", err)
+		return
+	}
 
 	//启动服务（优雅关机）
 	srv := &http.Server{

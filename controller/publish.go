@@ -22,11 +22,11 @@ func Publish(c *gin.Context) {
 		})
 	}
 	user := entity.User{
-		Id:            int64(userInfo.Id),
+		Id:            userInfo.Id,
 		Name:          userInfo.Username,
-		FollowCount:   0,
-		FollowerCount: 0,
-		IsFollow:      false,
+		FollowCount:   userInfo.FollowerCount,
+		FollowerCount: userInfo.FollowerCount,
+		IsFollow:      userInfo.IsFollow,
 	}
 	data, err := c.FormFile("data")
 	if err != nil {

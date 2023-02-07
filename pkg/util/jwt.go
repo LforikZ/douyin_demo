@@ -22,7 +22,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-//GenerateToken 签发用户Token
+// GenerateToken 签发用户Token
 func GenerateToken(id int64, username string, follow_count int64,
 	follower_count int64, is_follow bool, authority int64) (string, error) {
 	nowTime := time.Now()
@@ -44,7 +44,7 @@ func GenerateToken(id int64, username string, follow_count int64,
 	return token, err
 }
 
-//ParseToken 验证用户token
+// ParseToken 验证用户token
 func ParseToken(token string) (*Claims, error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil
@@ -57,7 +57,7 @@ func ParseToken(token string) (*Claims, error) {
 	return nil, err
 }
 
-//通过token获取用户信息
+// GetUserInfo 通过token获取用户信息
 func GetUserInfo(token string) (*entity.User, error) {
 	var user entity.User
 	var claims *Claims

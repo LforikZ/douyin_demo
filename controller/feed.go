@@ -43,6 +43,6 @@ func Feed(c *gin.Context) {
 
 }
 
-func GetIdByToken(token string) (int64, error) {
-
+func GetIdByToken(token string) (userid int64, err error) {
+	return
 }
