@@ -51,29 +51,40 @@ func CommentAction(c *gin.Context) {
 		return
 	}
 	// 业务处理
-	service.InsertComment(p)
-	//if user, exist := usersLoginInfo[token]; exist {
-	//	if actionType == "1" {
-	//		text := c.Query("comment_text")
-	//		c.JSON(http.StatusOK, CommentActionResponse{Response: Response{StatusCode: 0},
-	//			Comment: entity.Comment{
-	//				Id:         1,
-	//				User:       user,
-	//				Content:    text,
-	//				CreateDate: "05-01",
-	//			}})
-	//		return
-	//	}
-	//	c.JSON(http.StatusOK, Response{StatusCode: 0})
-	//} else {
-	//	c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-	//}
+	err = service.InsertComment(p)
+	if err != nil {
+		if p.ActionType == 1 {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: CodeFailed,
+				StatusMsg:  InsertCommentError,
+			})
+		} else if p.ActionType == 2 {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: CodeFailed,
+				StatusMsg:  DeleteCommentError,
+			})
+		}
+		return
+	} else {
+		if p.ActionType == 1 {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: CodeSuccess,
+				StatusMsg:  InsertCommentSuccess,
+			})
+		} else if p.ActionType == 2 {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: CodeSuccess,
+				StatusMsg:  DeleteCommentSuccess,
+			})
+		}
+		return
+	}
 }
 
 // CommentList all videos have same demo comment list
 func CommentList(c *gin.Context) {
 	c.JSON(http.StatusOK, CommentListResponse{
 		Response:    Response{StatusCode: 0},
-		CommentList: DemoComments,
+		CommentList: nil,
 	})
 }

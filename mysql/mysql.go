@@ -27,7 +27,7 @@ func Init(cfg *settings.MySQLConfig) error {
 	}
 	//TODO:将表配置到数据库中去
 	if err := db.AutoMigrate(
-		&Video{}, &User{},
+		&Video{}, &User{}, &Comment{},
 	); err != nil {
 		fmt.Println(err)
 		return nil

@@ -8,12 +8,16 @@ var (
 )
 
 const (
-	UploadSuccess  = " uploaded successfully"
-	UserNotExit    = "User doesn't exist"
-	ParamsError    = "Params  error"
-	ValidatorError = "Validator Error"
-	TokenError     = "Token  error"
-	VideosNotExit  = "Videos doesn't exist"
+	UploadSuccess        = "uploaded successfully"
+	InsertCommentSuccess = "Insert comment successfully"
+	DeleteCommentSuccess = "Delete comment successfully"
+	UserNotExit          = "User doesn't exist"
+	ParamsError          = "Params  error"
+	ValidatorError       = "Validator Error"
+	TokenError           = "Token  error"
+	VideosNotExit        = "Videos doesn't exist"
+	InsertCommentError   = "Insert comment Error"
+	DeleteCommentError   = "Delete comment Error"
 )
 
 type Response struct {

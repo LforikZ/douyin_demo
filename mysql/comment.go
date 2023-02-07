@@ -1,17 +1,36 @@
 // @Author Zihao_Li 2023/2/7 12:58:00
 package mysql
 
-import "gorm.io/gorm"
+import (
+	"github.com/RaymondCode/simple-demo/entity"
+	"gorm.io/gorm"
+)
 
 type Comment struct {
 	gorm.Model
-	CommentID   int    // 评论id
-	ActionType  int    // 1-发布评论，2-删除评论
+	CommentID   int64  // 评论id
 	VideoID     int64  // 视频id
 	UserID      int64  // 评论人ID
 	CommentText string // 评论内容
 }
 
-func InsertComment() {
+func InsertComment(a *entity.Comment) (err error) {
+	comment := Comment{
+		CommentID:   a.CommentID,
+		VideoID:     a.VideoID,
+		UserID:      a.User.Id,
+		CommentText: a.Content,
+	}
+	if result := db.Create(&comment); result.Error != nil {
+		err = result.Error
+	}
+	return err
+}
 
+func DeleteComment(commentID int64) (err error) {
+	var comment Comment
+	if result := db.Where("comment_id=?", commentID).Delete(&comment); result.Error != nil {
+		err = result.Error
+	}
+	return err
 }
