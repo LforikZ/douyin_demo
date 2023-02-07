@@ -34,3 +34,27 @@ func DeleteComment(commentID int64) (err error) {
 	}
 	return err
 }
+
+func GetVideoListByVid(videoID string) (a []entity.Comment, err error) {
+	var comments []Comment
+	if result := db.Where("video_id=?", videoID).Find(&comments); result.Error != nil {
+		err = result.Error
+	}
+	for _, comment := range comments {
+		midData := entity.Comment{
+			CommentID: comment.CommentID,
+			VideoID:   comment.VideoID,
+			User: entity.User{
+				Id:            comment.UserID,
+				Name:          "",
+				FollowCount:   0,
+				FollowerCount: 0,
+				IsFollow:      false,
+			},
+			Content:    comment.CommentText,
+			CreateDate: comment.CreatedAt.Format("01-02"),
+		}
+		a = append(a, midData)
+	}
+	return a, err
+}

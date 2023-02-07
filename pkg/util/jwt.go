@@ -71,9 +71,13 @@ func GetUserInfo(token string) (*entity.User, error) {
 	user.FollowCount = claims.FollowCount
 	user.FollowerCount = claims.FollowerCount
 	user.IsFollow = claims.IsFollow
-	return &entity.User{Name: user.Name, Id: int64(user.Id),
-		FollowCount: user.FollowCount, FollowerCount: user.FollowerCount,
-		IsFollow: user.IsFollow}, err
+	return &entity.User{
+		Name:          user.Name,
+		Id:            user.Id,
+		FollowCount:   user.FollowCount,
+		FollowerCount: user.FollowerCount,
+		IsFollow:      user.IsFollow,
+	}, err
 }
 
 func GetUserId(token string) int64 {

@@ -14,10 +14,12 @@ const (
 	UserNotExit          = "User doesn't exist"
 	ParamsError          = "Params  error"
 	ValidatorError       = "Validator Error"
-	TokenError           = "Token  error"
 	VideosNotExit        = "Videos doesn't exist"
 	InsertCommentError   = "Insert comment Error"
 	DeleteCommentError   = "Delete comment Error"
+	ContentLoss          = "Content loss"
+	CommentIDLoss        = "CommentID loss"
+	GetCommentListFiled  = "Get CommentList Filed"
 )
 
 type Response struct {
@@ -39,6 +41,11 @@ type FeedResponse struct {
 	Response
 	VideoList []entity.ApiVideo `json:"video_list,omitempty"`
 	NextTime  int64             `json:"next_time,omitempty"`
+}
+
+type CommentResponse struct {
+	Response
+	Comment entity.Comment `json:"comment,omitempty"`
 }
 
 type CommentListResponse struct {
