@@ -14,14 +14,14 @@ import "github.com/RaymondCode/simple-demo/entity"
 //	},
 //}
 
-var DemoComments = []entity.Comment{
-	{
-		Id:         1,
-		User:       DemoUser,
-		Content:    "Test Comment",
-		CreateDate: "05-01",
-	},
-}
+//var DemoComments = []entity.Comment{
+//	{
+//		Id:         1,
+//		User:       DemoUser,
+//		Content:    "Test Comment",
+//		CreateDate: "05-01",
+//	},
+//}
 
 var DemoUser = entity.User{
 	Id:            1,

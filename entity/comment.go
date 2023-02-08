@@ -2,8 +2,9 @@
 package entity
 
 type Comment struct {
-	Id         int64  `json:"id,omitempty"`
+	CommentID  int64  `json:"id"`
+	VideoID    int64  `json:"video_id"`
 	User       User   `json:"user"`
-	Content    string `json:"content,omitempty"`
-	CreateDate string `json:"create_date,omitempty"`
+	Content    string `json:"content"`
+	CreateDate string `json:"create_date"`
 }

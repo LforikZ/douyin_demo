@@ -5,6 +5,7 @@ import (
 	"github.com/RaymondCode/simple-demo/pkg/util"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -22,11 +23,11 @@ func Publish(c *gin.Context) {
 		})
 	}
 	user := entity.User{
-		Id:            int64(userInfo.Id),
+		Id:            userInfo.Id,
 		Name:          userInfo.Username,
-		FollowCount:   0,
-		FollowerCount: 0,
-		IsFollow:      false,
+		FollowCount:   userInfo.FollowerCount,
+		FollowerCount: userInfo.FollowerCount,
+		IsFollow:      userInfo.IsFollow,
 	}
 	data, err := c.FormFile("data")
 	if err != nil {
@@ -73,9 +74,21 @@ func PublishList(c *gin.Context) {
 	// 获取参数，并判断参数是否有效
 	var p entity.ParamTokenUID
 	if err := c.ShouldBindQuery(&p); err != nil {
-		c.JSON(http.StatusOK, Response{
-			StatusCode: CodeFailed,
-			StatusMsg:  ParamsError,
+		errs, ok := err.(validator.ValidationErrors) //类型断言
+		if !ok {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: CodeFailed,
+				StatusMsg:  ParamsError,
+			})
+			return
+		}
+		errData := RemoveTopStruct(errs.Translate(Trans)) // 翻译并去除错误中结构体名字
+		c.JSON(http.StatusOK, ResponseValim{
+			Response: Response{
+				StatusCode: CodeFailed,
+				StatusMsg:  ValidatorError,
+			},
+			Data: errData,
 		})
 		return
 	}
