@@ -14,7 +14,7 @@ type User struct {
 	Password      string
 	FollowCount   int64
 	FollowerCount int64
-	IsFollow      bool
+	IsFollow      bool `gorm:"default:false"`
 }
 
 const (
@@ -46,7 +46,7 @@ func InfoAuth(user *User, id int64) error {
 
 func GetUserInfo(id int) (result *entity.User, err error) {
 	var user User
-	if a := db.Where("id=?", id).Find(&user); a.Error != nil {
+	if a := db.Where("uid=?", id).Find(&user); a.Error != nil {
 		err = a.Error
 		return result, err
 	}

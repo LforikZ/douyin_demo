@@ -63,7 +63,7 @@ func FollowUpdate(follow entity.Follow, oldfollow bool) error {
 			FollowUserUpdate(follow, true, tx)
 		}
 		if isFollow == false && oldfollow == true {
-			FollowUserUpdate(follow, true, tx)
+			FollowUserUpdate(follow, false, tx)
 		}
 		return nil
 	})
@@ -73,7 +73,7 @@ func FollowUpdate(follow entity.Follow, oldfollow bool) error {
 	return nil
 }
 
-// follow后更新user flag为true表示关注，否则为取消关注
+// follow后更新user flag为true表示关注，否则为取消关注,在FollowUpdate中调用
 func FollowUserUpdate(follow entity.Follow, flag bool, tx *gorm.DB) error {
 	if flag == true {
 		follow_id := follow.FollowId
@@ -104,5 +104,45 @@ func FollowUserUpdate(follow entity.Follow, flag bool, tx *gorm.DB) error {
 		}
 		return nil
 	}
+}
 
+//FollowList
+
+func GetFollowedId(uid int64) []int64 {
+	ids := []int64{}
+	db.Model(&Follow{}).Where("follow_id = ? && is_follow=?", uid, true).Pluck("to_user_id", &ids)
+	return ids
+}
+
+//FollowerList
+
+func GetFollowerId(uid int64) []int64 {
+	ids := []int64{}
+	db.Model(&Follow{}).Where("to_user_id = ?&& is_follow=?", uid, true).Pluck("follow_id", &ids)
+	return ids
+}
+func FGetUserInfo(id int64) (result *entity.User, err error) {
+	var user User
+	if a := db.Where("uid=?", id).Find(&user); a.Error != nil {
+		err = a.Error
+		return result, err
+	}
+	result = &entity.User{
+		Id:            user.Uid,
+		Name:          user.Name,
+		FollowCount:   user.FollowCount,
+		FollowerCount: user.FollowerCount,
+		IsFollow:      user.IsFollow,
+	}
+	return result, err
+}
+
+//查看一个人是否关注了另一个人
+func FindIsFollow(user_id int64, id int64) (bool, error) {
+	var follow Follow
+	if err := db.Model(Follow{}).Where("follow_id=?&&to_user_id=?", user_id, id).
+		Find(&follow).Error; err != nil {
+		return false, err
+	}
+	return follow.IsFollow, nil
 }
