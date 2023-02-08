@@ -17,7 +17,7 @@ type Video struct {
 
 type ApiVideo struct {
 	Id            int64  //视频id，唯一标识
-	*User                //嵌入用户信息
+	*User                //嵌入作者信息
 	PlayUrl       string //视频地址
 	CoverUrl      string //封面网址
 	FavoriteCount int64  //收藏计数

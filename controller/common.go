@@ -12,6 +12,7 @@ const (
 	UserNotExit   = "User doesn't exist"
 	ParamsError   = "Params  error"
 	VideosNotExit = "Videos doesn't exist"
+	StatusSuccess = "Success"
 )
 
 type Response struct {
