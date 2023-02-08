@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/RaymondCode/simple-demo/mysql"
 	"github.com/RaymondCode/simple-demo/pkg/e"
 	"github.com/RaymondCode/simple-demo/pkg/util"
@@ -33,6 +34,13 @@ func RelationAction(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+	if mysql.IdAuth(to_user_id) == false {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: e.CodeFailed,
+			StatusMsg:  e.ErrorUserNotFound,
+		})
+		return
+	}
 	var isFollow bool = false
 	actionType := c.Query("action_type")
 	if actionType == "1" {
@@ -40,7 +48,8 @@ func RelationAction(c *gin.Context) {
 	}
 	var follow *mysql.Follow
 	real_follow := entity.Follow{follow_id, to_user_id, isFollow}
-	count := mysql.FollowAuth(follow_id, to_user_id, follow)
+	count, oldfollow := mysql.FollowAuth(follow_id, to_user_id, follow)
+	fmt.Println(oldfollow)
 	if count == 0 {
 		err := mysql.FollowCreate(&entity.Follow{FollowId: follow_id, ToUserId: to_user_id, IsFollow: isFollow})
 		if err != nil {
@@ -51,7 +60,8 @@ func RelationAction(c *gin.Context) {
 			return
 		}
 	} else {
-		mysql.FollowUpdate(real_follow)
+		mysql.FollowUpdate(real_follow, oldfollow)
+
 	}
 	var statusfollow string
 	if isFollow == true {
