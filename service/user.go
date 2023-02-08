@@ -15,7 +15,7 @@ type UserService struct {
 }
 
 type InfoService struct {
-	id   int64  `form:"id" json:"id" binding:"required"`
+	Id   int64  `form:"id" json:"id" binding:"required"`
 	Name string `form:"username" json:"username" binding:"required,max=32"`
 }
 
@@ -141,7 +141,7 @@ func (service *InfoService) Info(uid int64, name string) *entity.UserResponse {
 	var user mysql.User
 	err := mysql.InfoAuth(&user, uid)
 	if err != nil {
-		user := entity.User{Name: name, Id: service.id}
+		user := entity.User{Name: name, Id: service.Id}
 		if err.Error() == gorm.ErrRecordNotFound.Error() {
 			return &entity.UserResponse{
 				Response: entity.Response{

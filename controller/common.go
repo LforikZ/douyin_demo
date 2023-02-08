@@ -20,6 +20,7 @@ const (
 	ContentLoss          = "Content loss"
 	CommentIDLoss        = "CommentID loss"
 	GetCommentListFiled  = "Get CommentList Filed"
+	StatusSuccess        = "Success"
 )
 
 type Response struct {

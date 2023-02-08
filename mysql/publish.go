@@ -3,18 +3,20 @@ package mysql
 
 import (
 	"database/sql"
+
 	"github.com/RaymondCode/simple-demo/pkg/util"
+
+	"strconv"
 
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type Video struct {
 	gorm.Model
 	VideoID       int64  `gorm:"notnull"`       //视频id
 	AuthorID      string `gorm:"notnull"`       //作者id
-	Title         string `gorm:"title"`         //视频标题
+	Title         string `gorm:"column:title"`  //视频标题
 	AuthorName    string `gorm:"notnull"`       //作者姓名
 	PlayUrl       string `gorm:"notnull"`       //视频地址
 	CoverUrl      string `gorm:"notnull"`       //封面网址
