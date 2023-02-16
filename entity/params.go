@@ -18,3 +18,10 @@ type ParamComment struct {
 	Content    string `form:"comment_text,omitempty"`                   // 评论内容
 	CommentID  int64  `form:"comment_id,omitempty"`                     // 要删除的评论id，在action_type=2的时候使用
 }
+
+type ParamAction struct {
+	Token      string `form:"token" binding:"required"`
+	ToUserID   string `form:"to_user_id" binding:"required"`
+	ActionType string `form:"action_type" binding:"required"`
+	Content    string `form:"content" binding:"required"`
+}
